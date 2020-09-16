@@ -35,6 +35,13 @@ router.post(
     userController.verifyEmail
   );
 
+  /**
+ * @route GET api/users/me
+ * @description Get current user info
+ * @access Login required
+ */
+router.get("/me", authMiddleware.loginRequired, userController.getCurrentUser);
+
   module.exports = router;
 
   
