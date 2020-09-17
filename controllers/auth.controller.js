@@ -10,7 +10,7 @@ const authController = {};
 
 authController.loginWithEmail = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await (await User.findOne({ email }, "+password")).populate(
+  const user = await User.findOne({ email }, "+password").populate(
     "cart.productID"
   );
   if (!user)

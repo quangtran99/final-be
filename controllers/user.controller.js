@@ -86,7 +86,7 @@ userController.verifyEmail = catchAsync(async (req, res, next) => {
 
 userController.getCurrentUser = catchAsync(async (req, res, next) => {
   const userId = req.userId;
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).populate("cart.productID");
   return sendResponse(
     res,
     200,
@@ -102,6 +102,7 @@ userController.addToCart = catchAsync(async (req, res, next) => {
   const { productID, quantity } = req.body;
 
   let user = await User.findById(userId);
+
   user = user.toJSON();
   const item = user.cart.find((product) => product.productID.equals(productID));
   if (item) {
@@ -112,6 +113,7 @@ userController.addToCart = catchAsync(async (req, res, next) => {
   } else {
     user.cart = [...user.cart, { productID, quantity }];
   }
+
   console.log(user.cart);
   user = await User.findByIdAndUpdate(
     user._id,
@@ -120,6 +122,7 @@ userController.addToCart = catchAsync(async (req, res, next) => {
     },
     { new: true }
   ).populate("cart.productID");
+
   return sendResponse(
     res,
     200,
@@ -128,6 +131,29 @@ userController.addToCart = catchAsync(async (req, res, next) => {
     null,
     "Add to cart successful"
   );
+});
+
+userController.deleteItem = catchAsync(async (req, res, next) => {
+  const userId = req.userId;
+  const productID = req.params.id;
+
+  let user = await User.findById(userId);
+
+  user = user.toJSON();
+  user.cart = user.cart.filter(
+    (product) => !product.productID.equals(productID)
+  );
+
+  console.log(user.cart);
+  user = await User.findByIdAndUpdate(
+    user._id,
+    {
+      $set: { cart: user.cart },
+    },
+    { new: true }
+  );
+
+  return sendResponse(res, 200, true, null, null, "Remove item successful");
 });
 
 module.exports = userController;
