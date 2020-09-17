@@ -119,7 +119,7 @@ userController.addToCart = catchAsync(async (req, res, next) => {
       $set: { cart: user.cart },
     },
     { new: true }
-  );
+  ).populate("cart.productID");
   return sendResponse(
     res,
     200,
