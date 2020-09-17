@@ -44,11 +44,27 @@ authController.loginWithFacebook = async (req, res, next) => {
     let user = await User.findOne({ email: responseFb.data.email }).populate(
       "cart.productID"
     );
+    const randomPassword = "" + Math.floor(Math.random() * 10000000);
+    const salt = await bcrypt.genSalt(10);
+    const newPassword = await bcrypt.hash(randomPassword, salt);
     if (!user) {
       user = await User.create({
         name: responseFb.data.name,
         email: responseFb.data.email,
+        password: newPassword,
+        emailVerified: true,
       });
+    } else {
+      if (!user.emailVerified) {
+        user = await User.findByIdAndUpdate(
+          user._id,
+          {
+            $set: { emailVerified: true },
+            $unset: { emailVerificationCode: 1 },
+          },
+          { new: true }
+        );
+      }
     }
 
     dbAccessToken = await user.generateToken();
@@ -75,11 +91,26 @@ authController.loginWithGoogle = async (req, res, next) => {
     let user = await User.findOne({ email: responseGg.data.email }).populate(
       "cart.productID"
     );
+    const randomPassword = "" + Math.floor(Math.random() * 10000000);
+    const salt = await bcrypt.genSalt(10);
+    const newPassword = await bcrypt.hash(randomPassword, salt);
     if (!user) {
       user = await User.create({
         name: responseGg.data.name,
         email: responseGg.data.email,
+        password: newPassword,
+        emailVerified: true,
       });
+    }
+    if (!user.emailVerified) {
+      user = await User.findByIdAndUpdate(
+        user._id,
+        {
+          $set: { emailVerified: true },
+          $unset: { emailVerificationCode: 1 },
+        },
+        { new: true }
+      );
     }
 
     dbAccessToken = await user.generateToken();

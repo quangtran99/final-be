@@ -156,4 +156,11 @@ userController.deleteItem = catchAsync(async (req, res, next) => {
   return sendResponse(res, 200, true, null, null, "Remove item successful");
 });
 
+userController.updateQuantity = catchAsync(async (req, res, next) => {
+  const cart = req.body;
+  console.log(req.body);
+
+  return sendResponse(res, 200, true, cart, null, "Update quantity successful");
+});
+
 module.exports = userController;

@@ -61,4 +61,15 @@ router.delete(
   userController.deleteItem
 );
 
+/**
+ * @route post api/users/cart
+ * @description Add to cart
+ * @access Login required
+ */
+router.post(
+  "/update-quantity",
+  authMiddleware.loginRequired,
+  userController.updateQuantity
+);
+
 module.exports = router;
