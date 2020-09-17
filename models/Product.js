@@ -3,17 +3,17 @@ const Schema = mongoose.Schema;
 
 const productSchema = Schema(
   {
-    title: { type: String, required: true }, //model
-    content: { type: String, required: true }, // name
+    brand: { type: String, required: true }, //model
+    productName: { type: String, required: true }, // name
     author: {                                   //userPosted
       type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
-    price: [Number],
-    images: [String],
-    stock: [Number],
-    size:[Number],
+    price: {type: Number, required: true},
+    images: {type: String},
+    stock: {type: Number},
+    size:{type: Number},
     isDeleted: { type: Boolean, default: false, select: false },
   },
   { timestamps: true }

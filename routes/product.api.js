@@ -37,8 +37,9 @@ router.post(
   authMiddleware.loginRequired,
   // uploader.array("images", 2),
   validators.validate([
-    body("title", "Missing title").exists().notEmpty(),
-    body("content", "Missing content").exists().notEmpty(),
+    body("brand", "Missing brand").exists().notEmpty(),
+    body("productName", "Missing product name").exists().notEmpty(),
+    body("price", "Missing price").exists().notEmpty()
   ]),
   productController.createNewProduct
 );
@@ -53,8 +54,9 @@ router.put(
   authMiddleware.loginRequired,
   validators.validate([
     param("id").exists().isString().custom(validators.checkObjectId),
-    body("title", "Missing title").exists().notEmpty(),
-    body("content", "Missing content").exists().notEmpty(),
+    body("brand", "Missing brand").exists().notEmpty(),
+    body("productName", "Missing product name").exists().notEmpty(),
+    body("price", "Missing price").exists().notEmpty()
   ]),
   productController.updateSingleProduct
 );

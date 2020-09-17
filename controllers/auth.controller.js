@@ -54,7 +54,7 @@ const {
         res,
         200,
         true,
-        { accessToken: dbAccessToken },
+        { user, accessToken: dbAccessToken },
         null,
         "Login successful"
       );
@@ -85,7 +85,7 @@ const {
         res,
         200,
         true,
-        { accessToken: dbAccessToken },
+        { user, accessToken: dbAccessToken },
         null,
         "Login successful"
       );

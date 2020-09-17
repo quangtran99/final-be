@@ -41,7 +41,7 @@ const {
   
   productController.createNewProduct = catchAsync(async (req, res, next) => {
     const author = req.userId;
-    const { title, content } = req.body;
+    const { brand, productName, price } = req.body;
     let { images } = req.body;
     // if (req.files) {
     //   images = req.files.map((file) => {
@@ -50,9 +50,10 @@ const {
     // }
   
     const product = await Product.create({
-      title,
-      content,
+      brand,
+      productName,
       author,
+      price,
       images,
     });
   
@@ -62,11 +63,11 @@ const {
   productController.updateSingleProduct = catchAsync(async (req, res, next) => {
     const author = req.userId;
     const productId = req.params.id;
-    const { title, content } = req.body;
+    const { brand, productName, price } = req.body;
   
     const product = await Product.findOneAndUpdate(
       { _id: productId, author: author },
-      { title, content },
+      { brand, productName, price },
       { new: true }
     );
     if (!product)

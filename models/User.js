@@ -5,6 +5,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 const userSchema = Schema({
   name: {type: String, required: true},
+  role: {type: String, enum:['buyer', 'seller', 'admin'], default:'buyer'},
   email: {type: String, required: true, unique: true},
   avatarUrl: { type: String, require: false },
   emailVerificationCode: { type: String, select: false },
