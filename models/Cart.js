@@ -11,4 +11,4 @@ products: {
 })
 
 
-module.exports = mongoose.model("Card", cartSchema);
+module.exports = mongoose.model("Cart", cartSchema);
