@@ -33,16 +33,16 @@ userController.register = catchAsync(async (req, res, next) => {
   const accessToken = await user.generateToken();
 
   const verificationURL = `${FRONTEND_URL}/verify/${emailVerificationCode}`;
-  const emailData = await emailHelper.renderEmailTemplate(
-    "verify_email",
-    { name, code: verificationURL },
-    email
-  );
-  if (!emailData.error) {
-    emailHelper.send(emailData);
-  } else {
-    return next(new AppError(500, emailData.error, "Create Email Error"));
-  }
+  // const emailData = await emailHelper.renderEmailTemplate(
+  //   "verify_email",
+  //   { name, code: verificationURL },
+  //   email
+  // );
+  // if (!emailData.error) {
+  //   emailHelper.send(emailData);
+  // } else {
+  //   return next(new AppError(500, emailData.error, "Create Email Error"));
+  // }
 
   return sendResponse(
     res,
@@ -157,10 +157,36 @@ userController.deleteItem = catchAsync(async (req, res, next) => {
 });
 
 userController.updateQuantity = catchAsync(async (req, res, next) => {
-  const cart = req.body;
-  console.log(req.body);
+  let cart = req.body;
+  const userId = req.userId;
 
-  return sendResponse(res, 200, true, cart, null, "Update quantity successful");
+  cart = cart.map((product) => ({
+    ...product,
+    productID: product.productID._id,
+  }));
+  console.log(cart);
+  // let user = await User.findById(userId);
+  // user = user.toJSON();
+  // const item = user.cart.find((product) => product._id.equals(cart._id));
+  // // if (item) {
+  // //   user.cart = user.cart.map((product) => {
+  // //     console.log("product", product);
+  // //     if (product._id.equals(cart._id)) return product;
+  // //     return { ...product, quantity: product.quantity };
+  // //   });
+  // // }
+  // // console.log(user.cart);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: { cart: cart },
+    },
+    { new: true }
+  );
+  if (!user)
+    return next(new AppError(400, "Update cart failed", "Update Cart Error"));
+
+  return sendResponse(res, 200, true, null, null, "Update quantity successful");
 });
 
 module.exports = userController;

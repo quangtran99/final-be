@@ -49,7 +49,7 @@ router.post("/cart", authMiddleware.loginRequired, userController.addToCart);
 
 /**
  * @route delete api/users/cart/:id
- * @description Add to cart
+ * @description Delete from cart
  * @access Login required
  */
 router.delete(
@@ -63,7 +63,7 @@ router.delete(
 
 /**
  * @route post api/users/cart
- * @description Add to cart
+ * @description Update Quantity
  * @access Login required
  */
 router.post(

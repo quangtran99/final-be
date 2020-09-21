@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 // userApi
@@ -13,8 +13,9 @@ router.use("/auth", authApi);
 const productApi = require("./product.api.js");
 router.use("/products", productApi);
 
-// cartApi
-const cartApi = require("./cart.api")
-router.use("/cart", cartApi)
+// transactionApi
+
+const transactionApi = require("./transaction.api");
+router.use("/transaction", transactionApi);
 
 module.exports = router;
