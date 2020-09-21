@@ -10,9 +10,9 @@ const transactionController = {};
 transactionController.createOrder = catchAsync(async (req, res, next) => {
   let { name, email, address, totalPrice } = req.body;
   const userId = req.userId;
-  const user = await User.findById(userId).populate(
+  let user = await User.findById(userId).populate(
     "cart.productID",
-    "productName price"
+    "productName price brand"
   );
   if (!user)
     return next(new AppError(400, "User not found", "Create Order Error"));
@@ -38,6 +38,13 @@ transactionController.createOrder = catchAsync(async (req, res, next) => {
     $set: { cart: [] },
   });
 
-  return sendResponse(res, 200, true, null, null, "Create Order successful");
+  return sendResponse(
+    res,
+    200,
+    true,
+    transaction,
+    null,
+    "Create Order successful"
+  );
 });
 module.exports = transactionController;

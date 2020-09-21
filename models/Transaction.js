@@ -13,7 +13,8 @@ const transactionSchema = Schema(
         quantity: { type: Number, default: 1 },
         productID: {
           _id: { type: Schema.Types.ObjectId },
-          name: String,
+          brand: String,
+          productName: String,
           price: Number,
         },
       }),
