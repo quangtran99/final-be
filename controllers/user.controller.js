@@ -4,10 +4,9 @@ const {
   sendResponse,
 } = require("../helpers/utils.helper");
 const User = require("../models/User");
-//   const Friendship = require("../models/Friendship");
 const bcrypt = require("bcryptjs");
-//   const Conversation = require("../models/Conversation");
-//   const { emailHelper } = require("../helpers/email.helper");
+
+const { emailHelper } = require("../helpers/email.helper");
 const utilsHelper = require("../helpers/utils.helper");
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const userController = {};
@@ -33,16 +32,16 @@ userController.register = catchAsync(async (req, res, next) => {
   const accessToken = await user.generateToken();
 
   const verificationURL = `${FRONTEND_URL}/verify/${emailVerificationCode}`;
-  // const emailData = await emailHelper.renderEmailTemplate(
-  //   "verify_email",
-  //   { name, code: verificationURL },
-  //   email
-  // );
-  // if (!emailData.error) {
-  //   emailHelper.send(emailData);
-  // } else {
-  //   return next(new AppError(500, emailData.error, "Create Email Error"));
-  // }
+  const emailData = await emailHelper.renderEmailTemplate(
+    "verify_email",
+    { name, code: verificationURL },
+    email
+  );
+  if (!emailData.error) {
+    emailHelper.send(emailData);
+  } else {
+    return next(new AppError(500, emailData.error, "Create Email Error"));
+  }
 
   return sendResponse(
     res,
@@ -51,6 +50,30 @@ userController.register = catchAsync(async (req, res, next) => {
     { user, accessToken },
     null,
     "Create user successful"
+  );
+});
+
+userController.updateProfile = catchAsync(async (req, res, next) => {
+  const userId = req.userId;
+  const allows = ["name", "password", "avatarUrl"];
+  const user = await User.findById(userId);
+  if (!user) {
+    return next(new AppError(404, "Account not found", "Update Profile Error"));
+  }
+
+  allows.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      user[field] = req.body[field];
+    }
+  });
+  await user.save();
+  return sendResponse(
+    res,
+    200,
+    true,
+    user,
+    null,
+    "Update Profile successfully"
   );
 });
 
@@ -69,7 +92,7 @@ userController.verifyEmail = catchAsync(async (req, res, next) => {
     user._id,
     {
       $set: { emailVerified: true },
-      $unset: { emailVerificationCode: 1 },
+      // $unset: { emailVerificationCode: 1 },
     },
     { new: true }
   );

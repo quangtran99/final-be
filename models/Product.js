@@ -12,7 +12,7 @@ const productSchema = Schema(
       ref: "User",
     },
     price: { type: Number, required: true },
-    images: { type: String },
+    image: String,
     stock: { type: Number },
     size: { type: Number },
     isDeleted: { type: Boolean, default: false, select: false },

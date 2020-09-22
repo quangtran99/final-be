@@ -34,6 +34,13 @@ router.post(
 );
 
 /**
+ * @route PUT api/users/
+ * @description Update user profile
+ * @access Login required
+ */
+router.put("/", authMiddleware.loginRequired, userController.updateProfile);
+
+/**
  * @route GET api/users/me
  * @description Get current user info
  * @access Login required

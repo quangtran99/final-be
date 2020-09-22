@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const validators = require("../middlewares/validators");
 const { body } = require("express-validator");
 const authController = require("../controllers/auth.controller");
@@ -19,23 +20,25 @@ router.post(
 );
 
 /**
- * @route GET api/auth/login/facebook
+ * @route POST api/auth/login/facebook
  * @description Login with facebook
  * @access Public
  */
-router.get(
-  "/login/facebook/:facebookToken",
-  authController.loginWithFacebook
+router.post(
+  "/login/facebook",
+  passport.authenticate("facebook-token"),
+  authController.loginWithFacebookOrGoogle
 );
 
 /**
- * @route GET api/auth/login/google
+ * @route POST api/auth/login/google
  * @description Login with google
  * @access Public
  */
-router.get(
-  "/login/google/:googleToken",
-  authController.loginWithGoogle
+router.post(
+  "/login/google",
+  passport.authenticate("google-token"),
+  authController.loginWithFacebookOrGoogle
 );
 
 module.exports = router;

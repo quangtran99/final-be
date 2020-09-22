@@ -5,7 +5,6 @@ const {
 } = require("../helpers/utils.helper");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const axios = require("axios");
 const authController = {};
 
 authController.loginWithEmail = catchAsync(async (req, res, next) => {
@@ -34,97 +33,51 @@ authController.loginWithEmail = catchAsync(async (req, res, next) => {
   );
 });
 
-authController.loginWithFacebook = async (req, res, next) => {
-  try {
-    const accessToken = req.params.facebookToken;
-    const responseFb = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${accessToken}
-        `);
-    console.log(responseFb);
-    // {name, email} = responseFb.data
-    let user = await User.findOne({ email: responseFb.data.email }).populate(
-      "cart.productID"
-    );
+authController.loginWithFacebookOrGoogle = catchAsync(
+  async (req, res, next) => {
+    let profile = req.user;
+    profile.email = profile.email.toLowerCase();
+    let user = await User.findOne({ email: profile.email });
     const randomPassword = "" + Math.floor(Math.random() * 10000000);
     const salt = await bcrypt.genSalt(10);
     const newPassword = await bcrypt.hash(randomPassword, salt);
-    if (!user) {
-      user = await User.create({
-        name: responseFb.data.name,
-        email: responseFb.data.email,
-        password: newPassword,
-        emailVerified: true,
-      });
-    } else {
+
+    if (user) {
       if (!user.emailVerified) {
         user = await User.findByIdAndUpdate(
           user._id,
           {
-            $set: { emailVerified: true },
+            $set: { emailVerified: true, avatarUrl: profile.avatarUrl },
             $unset: { emailVerificationCode: 1 },
           },
           { new: true }
         );
+      } else {
+        user = await User.findByIdAndUpdate(
+          user._id,
+          { avatarUrl: profile.avatarUrl },
+          { new: true }
+        );
       }
-    }
-
-    dbAccessToken = await user.generateToken();
-    return sendResponse(
-      res,
-      200,
-      true,
-      { user, accessToken: dbAccessToken },
-      null,
-      "Login successful"
-    );
-  } catch (error) {
-    next(error);
-  }
-};
-
-authController.loginWithGoogle = async (req, res, next) => {
-  try {
-    const accessToken = req.params.googleToken;
-    const responseGg = await axios.get(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}
-        `);
-    console.log(responseGg);
-    // {name, email} = responseGg.data
-    let user = await User.findOne({ email: responseGg.data.email }).populate(
-      "cart.productID"
-    );
-    const randomPassword = "" + Math.floor(Math.random() * 10000000);
-    const salt = await bcrypt.genSalt(10);
-    const newPassword = await bcrypt.hash(randomPassword, salt);
-    if (!user) {
+    } else {
       user = await User.create({
-        name: responseGg.data.name,
-        email: responseGg.data.email,
+        name: profile.name,
+        email: profile.email,
         password: newPassword,
-        emailVerified: true,
+        avatarUrl: profile.avatarUrl,
       });
     }
-    if (!user.emailVerified) {
-      user = await User.findByIdAndUpdate(
-        user._id,
-        {
-          $set: { emailVerified: true },
-          $unset: { emailVerificationCode: 1 },
-        },
-        { new: true }
-      );
-    }
 
-    dbAccessToken = await user.generateToken();
+    const accessToken = await user.generateToken();
     return sendResponse(
       res,
       200,
       true,
-      { user, accessToken: dbAccessToken },
+      { user, accessToken },
       null,
       "Login successful"
     );
-  } catch (error) {
-    next(error);
   }
-};
+);
 
 module.exports = authController;
