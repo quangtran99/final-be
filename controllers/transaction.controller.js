@@ -8,7 +8,7 @@ const User = require("../models/User");
 const transactionController = {};
 
 transactionController.createOrder = catchAsync(async (req, res, next) => {
-  let { name, email, address, totalPrice } = req.body;
+  let { name, email, address } = req.body;
   const userId = req.userId;
   let user = await User.findById(userId).populate(
     "cart.productID",
@@ -23,14 +23,20 @@ transactionController.createOrder = catchAsync(async (req, res, next) => {
     email,
     address,
   });
+  let totalPrice = 0;
+
+  for (let i = 0; i < user.cart.length; i++) {
+    totalPrice += user.cart[i].quantity * user.cart[i].productID.price;
+  }
 
   const transaction = await Transaction.create({
     user: user._id,
     products: user.cart,
-    totalPrice: totalPrice,
+    totalPrice,
     shipping: {
       fullName: name,
       address: address,
+      email: email,
     },
   });
 

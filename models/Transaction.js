@@ -29,11 +29,18 @@ const transactionSchema = Schema(
         type: String,
         required: [true, "Need address for the bill"],
       },
+      email: {
+        type: String,
+        required: [true, "Need email for the bill"],
+      },
     },
     paid: {
       type: Boolean,
       default: false,
     },
+    status: { type: String, enum: ["Pending", "Done"], default: "Pending" },
+    payment: { type: String, default: "COD" },
+    delivery: { type: String, default: "Standard" },
   },
   { timestamps: true }
 );
