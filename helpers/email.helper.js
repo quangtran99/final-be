@@ -17,8 +17,8 @@ emailInternalHelper.createTemplatesIfNotExists = async () => {
         name: "Verify Email Template",
         template_key: "verify_email",
         description: "This template is used when user register a new email",
-        from: "CoderSchool Team <social_blog@mg.coderschool.vn>",
-        subject: "Hi %name%, welcome to CoderSchool!",
+        from: "Elahw Team <support@mg.elahw.vn>",
+        subject: "Hi %name%, welcome to Elahw!",
         variables: ["name", "code"],
         html: `Hi <strong>%name%</strong> ,
       <br /> <br /> 
@@ -29,9 +29,9 @@ emailInternalHelper.createTemplatesIfNotExists = async () => {
       %code%
       <br /> <br />
       If you face any difficulty during the sign-up, do get in
-      touch with our Support team: apply@coderschool.vn
+      touch with our Support team: apply@elahw.vn
       <br /> <br /> Always be learning!
-      <br /> CoderSchool Team
+      <br /> Elahw Team
       `,
       });
       console.log("Created verify_email template");
