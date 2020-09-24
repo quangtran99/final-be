@@ -53,4 +53,44 @@ transactionController.createOrder = catchAsync(async (req, res, next) => {
     "Create Order successful"
   );
 });
+
+transactionController.getOrder = catchAsync(async (req, res, next) => {
+  let { page, limit, sortBy, ...filter } = { ...req.query };
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 10;
+
+  const totalOrders = await Transaction.countDocuments({
+    ...filter,
+  });
+  const totalPages = Math.ceil(totalOrders / limit);
+  const offset = limit * (page - 1);
+
+  const orders = await Transaction.find(filter)
+    .sort({ ...sortBy, createdAt: -1 })
+    .skip(offset)
+    .limit(limit)
+    .populate("author");
+
+  return sendResponse(res, 200, true, { orders, totalPages }, null, "");
+});
+
+transactionController.updateStatus = catchAsync(async (req, res, next) => {
+  const orderId = req.params.id;
+
+  const order = await Transaction.findOneAndUpdate(
+    { _id: orderId, status: "Pending" },
+    { $set: { status: "Done" } },
+    { new: true }
+  );
+  if (!order)
+    return next(
+      new AppError(
+        400,
+        "Order not found or User not authorized",
+        "Update order Error"
+      )
+    );
+  return sendResponse(res, 200, true, order, null, "Update order successful");
+});
+
 module.exports = transactionController;

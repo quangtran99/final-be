@@ -34,10 +34,7 @@ const transactionSchema = Schema(
         required: [true, "Need email for the bill"],
       },
     },
-    paid: {
-      type: Boolean,
-      default: false,
-    },
+
     status: { type: String, enum: ["Pending", "Done"], default: "Pending" },
     payment: { type: String, default: "COD" },
     delivery: { type: String, default: "Standard" },
