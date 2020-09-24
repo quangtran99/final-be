@@ -57,7 +57,7 @@ transactionController.createOrder = catchAsync(async (req, res, next) => {
 transactionController.getOrder = catchAsync(async (req, res, next) => {
   let { page, limit, sortBy, ...filter } = { ...req.query };
   page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
+  limit = parseInt(limit) || 5;
 
   const totalOrders = await Transaction.countDocuments({
     ...filter,
@@ -91,6 +91,28 @@ transactionController.updateStatus = catchAsync(async (req, res, next) => {
       )
     );
   return sendResponse(res, 200, true, order, null, "Update order successful");
+});
+
+transactionController.getOrderByID = catchAsync(async (req, res, next) => {
+  let { page, limit, sortBy, ...filter } = { ...req.query };
+  const user = req.userId;
+  page = parseInt(page) || 1;
+  limit = parseInt(limit) || 5;
+
+  const totalOrders = await Transaction.countDocuments({
+    ...filter,
+    user,
+  });
+  const totalPages = Math.ceil(totalOrders / limit);
+  const offset = limit * (page - 1);
+
+  const orders = await Transaction.find({ ...filter, user })
+    .sort({ ...sortBy, createdAt: -1 })
+    .skip(offset)
+    .limit(limit)
+    .populate("author");
+
+  return sendResponse(res, 200, true, { orders, totalPages }, null, "");
 });
 
 module.exports = transactionController;

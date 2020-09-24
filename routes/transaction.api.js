@@ -37,4 +37,15 @@ router.put(
   transactionController.updateStatus
 );
 
+/**
+ * @route GET api/transaction?page=1&limit=10
+ * @description Get transaction with pagination by ID
+ * @access Public
+ */
+router.get(
+  "/user",
+  authMiddleware.loginRequired,
+  transactionController.getOrderByID
+);
+
 module.exports = router;
