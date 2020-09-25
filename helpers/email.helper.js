@@ -30,7 +30,7 @@ emailInternalHelper.createTemplatesIfNotExists = async () => {
       <br /> <br />
       If you face any difficulty during the sign-up, do get in
       touch with our Support team: apply@elahw.vn
-      <br /> <br /> Always be learning!
+      <br /> <br /> Always buy our products!
       <br /> Elahw Team
       `,
       });

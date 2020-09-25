@@ -7,12 +7,12 @@ authMiddleware.loginRequired = (req, res, next) => {
   try {
     const tokenString = req.headers.authorization;
     if (!tokenString)
-      return next(new AppError(401, "Token not found", "Validation Error"));
+      return next(new AppError(401, "You need to login", "Validation Error"));
     const token = tokenString.replace("Bearer ", "");
     jwt.verify(token, JWT_SECRET_KEY, (err, payload) => {
       if (err) {
         if (err.name === "TokenExpiredError") {
-          return next(new AppError(401, "Token expired", "Validation Error"));
+          return next(new AppError(401, "Time out", "Validation Error"));
         } else {
           return next(
             new AppError(401, "Token is invalid", "Validation Error")
